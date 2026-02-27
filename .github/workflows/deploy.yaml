@@ -1,0 +1,21 @@
+name: "Deploy"
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4 
+
+      - name: Set up kubeconfig
+        run: |
+          echo "${{ secrets.KUBECTL_CONFIG }}" | base64 -d > kubeconfig.yaml
+
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f k8s/deployment.yaml --kubeconfig=kubeconfig.yaml
