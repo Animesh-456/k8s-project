@@ -1,37 +1,42 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: my-app
+  name: go-app-deployment
   labels:
-    app: my-app
+    app: go-app
 spec:
-  replicas: 3
+  replicas: 4
   selector:
     matchLabels:
-      app: my-app
+      app: go-app
   template:
     metadata:
       labels:
-        app: my-app
+        app: go-app
     spec:
       containers:
-        - name: my-app
+        - name: go-app
           image: ghcr.io/animesh-456/go-k8s:master
           ports:
-            - containerPort: 3000   
-          imagePullPolicy: Always
-      imagePullSecrets:
-        - name: ghcr-secret         
+            - containerPort: 3000
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: my-app-svc
+  name: go-app-loadbalancer
 spec:
+  type: LoadBalancer
   selector:
-    app: my-app
+    app: go-app
   ports:
     - protocol: TCP
       port: 80
-      targetPort: 3000              
-  type: LoadBalancer                
+      targetPort: 3000
